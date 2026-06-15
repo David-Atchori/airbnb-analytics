@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: silver_hosts
+    description: "Hôtes nettoyés et typés. Les hôtes anonymes sont renommés 'Anonymous'."
+    columns:
+      - name: host_id
+        description: "Identifiant entier de l'hôte"
+        tests:
+          - not_null
+          - unique
+      - name: host_name
+        description: "Nom de l'hôte (jamais NULL)"
+        tests:
+          - not_null
+      - name: is_superhost
+        description: "Booléen superhost"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+  - name: silver_listings
+    description: "Annonces nettoyées : prix converti en float, minimum_nights >= 1."
+    columns:
+      - name: listing_id
+        description: "Identifiant unique de l'annonce"
+        tests:
+          - not_null
+          - unique
+      - name: host_id
+        description: "Référence vers silver_hosts"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('silver_hosts')
+              field: host_id
+      - name: price
+        description: "Prix en dollars (float)"
+        tests:
+          - not_null
+
+  - name: silver_reviews
+    description: "Avis filtrés (texte non vide), avec date et sentiment."
+    columns:
+      - name: listing_id
+        description: "Référence vers silver_listings"
+        tests:
+          - not_null
+      - name: review_date
+        description: "Date de l'avis (DATE)"
+        tests:
+          - not_null
+      - name: sentiment
+        description: "Sentiment pré-calculé"
+        tests:
+          - accepted_values:
+              values: ['positive', 'negative', 'neutral']
+              config:
+                severity: warn
+
+  - name: silver_full_moon_dates
+    description: "Dates de pleine lune (dédupliquées, typées DATE)."
+    columns:
+      - name: full_moon_date
+        description: "Date de pleine lune"
+        tests:
+          - not_null
+          - unique

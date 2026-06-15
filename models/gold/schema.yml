@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: dim_hosts
+    description: "Dimension hôtes avec ancienneté calculée."
+    columns:
+      - name: host_id
+        description: "Clé primaire"
+        tests:
+          - not_null
+          - unique
+      - name: host_name
+        tests:
+          - not_null
+      - name: is_superhost
+        tests:
+          - not_null
+
+  - name: dim_listings
+    description: "Dimension annonces avec catégorie de prix et infos hôte."
+    columns:
+      - name: listing_id
+        description: "Clé primaire"
+        tests:
+          - not_null
+          - unique
+      - name: price_category
+        description: "Tranche de prix : Budget / Standard / Premium / Luxury"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Budget', 'Standard', 'Premium', 'Luxury']
+
+  - name: fact_reviews
+    description: "Faits des avis enrichis avec pleine lune, listing et hôte."
+    columns:
+      - name: listing_id
+        tests:
+          - not_null
+      - name: review_date
+        tests:
+          - not_null
+      - name: is_full_moon
+        description: "TRUE si l'avis a été posté le lendemain d'une pleine lune"
+        tests:
+          - not_null
+
+  - name: mart_full_moon_analysis
+    description: "Agrégat sentiment × pleine lune pour visualisation."
+
+  - name: mart_host_performance
+    description: "KPIs de performance par hôte."

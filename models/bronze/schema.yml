@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: bronze_hosts
+    description: "Ingestion brute des hôtes Airbnb depuis S3. Aucune transformation appliquée."
+    columns:
+      - name: id
+        description: "Identifiant unique de l'hôte"
+        tests:
+          - not_null
+      - name: name
+        description: "Nom de l'hôte"
+      - name: is_superhost
+        description: "Indicateur superhost (TRUE/FALSE)"
+      - name: created_at
+        description: "Date de création du compte"
+      - name: updated_at
+        description: "Date de mise à jour"
+
+  - name: bronze_reviews
+    description: "Ingestion brute des avis clients Airbnb depuis S3."
+    columns:
+      - name: listing_id
+        description: "Identifiant du logement commenté"
+        tests:
+          - not_null
+      - name: date
+        description: "Date de l'avis"
+      - name: reviewer_name
+        description: "Nom du reviewer"
+      - name: comments
+        description: "Texte brut de l'avis"
+      - name: sentiment
+        description: "Sentiment pré-calculé"
+
+  - name: bronze_listings
+    description: "Ingestion brute des annonces Airbnb depuis S3."
+    columns:
+      - name: id
+        description: "Identifiant unique du listing"
+        tests:
+          - not_null
+          - unique
+      - name: host_id
+        description: "Clé étrangère vers l'hôte"
+        tests:
+          - not_null
+
+  - name: bronze_full_moon_dates
+    description: "Dates de pleine lune pour enrichissement des avis."
+    columns:
+      - name: full_moon_date
+        description: "Date de pleine lune"
+        tests:
+          - not_null
+          - unique
